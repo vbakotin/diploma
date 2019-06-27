@@ -1,0 +1,40 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Mar 24 22:59:02 2019
+
+@author: vasil
+"""
+
+import requests
+import xml
+from parsel import Selector
+from bs4 import BeautifulSoup
+import codecs
+import time
+import os
+import re
+import pandas as pd
+os.chdir(r'c:/users/vasil/desktop')
+start = time.time()
+
+
+TAG_RE = re.compile(r'<[^>]+>')
+
+def remove_tags_1(text):
+    return TAG_RE.sub('', text)
+
+for k in range(1, 5):
+    q = 'https://pravda-sotrudnikov.ru/company/oao-bank-otkrytie?page=' + str(k)
+    response = requests.get(q)
+    selector = Selector(response.text)
+    otz = selector.xpath('//div[@class="company-reviews-list-item-text-message"]').getall()
+    clean = []
+    for i in otz:
+        clean.append(remove_tags_1(i))
+    with codecs.open ('ex.csv', 'a', encoding = 'utf-16') as file:
+        for el in clean:
+            file.write(el)
+
+end = time.time()
+print(clean)
+print("Time taken in seconds : ", (end-start))
