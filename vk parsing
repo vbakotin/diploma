@@ -1,0 +1,11 @@
+import os
+import vk_api
+
+os.chdir(r"C:\Users\vasil\Desktop\implementation")
+vk_session = vk_api.VkApi('phone/email', 'password')
+vk_session.auth()
+vk = vk_session.get_api()
+tools = vk_api.VkTools(vk_session)
+
+
+wall = tools.get_all('wall.get', 30, {'owner_id': -30659927}) # итерируемый объект, из него инфа достается обычными циклами 
