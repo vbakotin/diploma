@@ -39,14 +39,20 @@ for l in chats:
             except Exception as e:
                 pass
                 
-# теперь к каждому сообщению применим функцию очистки текста
+# теперь к каждому сообщению применим функцию очистки текста и вернем очищенное сообщение + списки людей и орг из него
 dict_ = {}   
 for pers in msg:
-    for txt in msg[pers]:
-        cleared_txt = clear(txt.strip())
+    for txt in msg[pers]: 
+        people = extract_person(str(txt).split('|')[1])  # смотри NER 
+        organis = extract_org(str(txt).split('|')[1]) 
+        cleared_txt = clear(str(txt).split('|')[1])
+        cleared_txt.insert(0, str(txt).split('|')[0])
+        cleared_txt.insert(0,people)
+        cleared_txt.insert(0,organis)
         try:
             dict_[pers].append(cleared_txt)
         except KeyError:
             dict_[pers] = [cleared_txt]
+
             
  
