@@ -1,0 +1,41 @@
+# на вход inp - русский текст в произвольном виде
+import natasha 
+
+extractor_name = NamesExtractor()
+extractor_org = OrganisationExtractor()
+
+def extract_person(inp):
+    matches = extractor_name(inp)
+    spans = [_.span for _ in matches]
+    facts = [_.fact.as_json for _ in matches]
+    persons = []
+    for i in range(len(facts)):
+        od = facts[i]
+        if 'first' in od and 'last' in od:
+            name = od['first']
+            surname = od['last']
+            person = str(name).capitalize() + ' ' + str(surname).capitalize()
+        elif 'first' in od:
+            name = od['first']
+            person = str(name).capitalize()
+        elif 'last' in od:
+            surname = od['last']
+            person = str(surname).capitalize() + str(1)
+        persons.append(person)
+    return persons
+    
+
+
+def extract_org(inp):        
+    matches1 = extractor_org(inp)
+    spans1 = [_.span for _ in matches1]
+    facts1 = [_.fact.as_json for _ in matches1]
+    organis = []
+    for i in range(len(facts1)):
+        od = facts1[i] # ord dict
+        k = list(od)[0]
+        value = od[k]
+        value = morph.parse(value)[0].normal_form
+        org = str(value).capitalize() + str(1)
+        organis.append(org)
+    return organis
