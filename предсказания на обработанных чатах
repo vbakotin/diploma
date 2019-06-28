@@ -1,0 +1,23 @@
+outs = {}
+counts = {} # число сообщений в чатах
+for chater in dict_:
+    for mes in dict_[chater]:
+        try:
+            counts[chater] += 1
+        except KeyError:
+            counts[chater] = 1
+        mes_ = str(mes[3:])
+        mes_time = str(mes[2])
+        ludi = mes[0]
+        org = mes[1]
+        inp = np.array(pad_sequences(tokenizer.texts_to_sequences([mes_]), maxlen=90))
+        out = make_pred(inp) # смотри обработка предсказаний
+        
+        if out != 'neutral':
+            out.append(mes_time)
+            out.append(ludi)
+            out.append(org)
+        try:
+            outs[chater].append(out)
+        except KeyError:
+            outs[chater] = [out]
