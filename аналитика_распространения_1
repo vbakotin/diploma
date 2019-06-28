@@ -1,0 +1,42 @@
+# ФУНКЦИЯ ПОЛУЧАЕТ УЗЕЛ, ПЕРСОНУ, УГРОЗУ, ВРЕМЯ НАЧАЛА АНАЛИЗА
+# Возвращает список времен или время первого вхождения
+
+# лучше смотреть распространение конкретной угрозы. На вход давать из главных
+def tstamps(person, threat, c_date_time,cur_node):
+    tstamps = []
+    c_date_time = dt.strptime(c_date_time, "%d.%m.%Y %H:%M:%S")
+    if cur_node == 'Vasiliy Bakotin':
+        ref = outs
+    else:
+        ref = outs_Антон
+    for pred in ref[person]:
+            if pred != 'neutral':
+                t = pred[-3]
+                thr_time = dt.strptime(t, "%d.%m.%Y %H:%M:%S")
+                if threat in pred and thr_time >= c_date_time:
+                    tstamps.append(thr_time)
+    return tstamps
+    
+
+
+
+#возвращает последний инстанс угрозы перед n часовым лагом (лаг настраиваемый)
+def fading(tstamps:list):
+    diff = [t - s for s, t in zip(tstamps, tstamps[1:])]
+    for i in diff:
+        if i >= timedelta(0,360):
+            pos = diff.index(i)
+            return tstamps[pos-1]
+    return
+#def check_persons()
+# Придумать формулу 
+#def check_org()
+
+def intensity(tstamps):
+    interval = (tstamps[-1] - tstamps[0]).total_seconds()
+    count = len(tstamps)
+    intense = round(count/interval,6)
+    return count
+
+kl = tstamps('Антон','court_threat', '13.04.2019 23:00:00','Vasiliy Bakotin')
+print(intensity(kl))
