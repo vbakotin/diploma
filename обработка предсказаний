@@ -1,0 +1,31 @@
+# на вход текст в явном виде
+#поскольку в сетях выходная функция - binary crossentropy, для каждого лейбла определяется вероятность наличия в тексте (да-нет), но 
+#это не является вероятностным распределением на множестве лейблов. Можно использовать softmax, тогда будет распределение. Но с точки зрения обучения
+#говорят это не корректно
+
+
+def make_pred(inp):   
+    labels_list = ['salary', 'boss', 'atmosphere', 'fire_threat', 'work_cond', 'neutral', 'court_threat']
+    prediction = model.predict(inp)[0]
+    otvet = dict(zip(labels_list, prediction)) # {label -> probability (binary)}
+    otvet_s = sorted(otvet.items(), key = itemgetter(1), reverse = True)
+    if  'neutral' in otvet_s[0]:
+        selected = list(otvet_s)[0]
+        labs = selected[0]
+        return str(labs)
+    
+        
+    elif 3*otvet_s[1][1] < otvet_s[0][1]:  
+        selected = list(otvet_s)[:1]
+        labs = []
+        for el in selected:
+            labs.append(el[0])
+        return labs
+        
+    else:
+        selected = list(otvet_s)[:2]
+        labs = []
+        for el in selected:
+            labs.append(el[0])
+        return labs
+       
