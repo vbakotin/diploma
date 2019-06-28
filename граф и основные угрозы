@@ -1,0 +1,82 @@
+main_threats = {}
+susp_persons = []
+for person in persons[1:]:
+    if 1-(outs[person].count('neutral') / counts[person]) > 0.2:
+        susp_persons.append(person)
+        threats = [lab for lab in outs[person] if lab!='neutral']
+        flat_threat = [item for sublist in threats for item in sublist]
+        clean_threats = [thr for thr in flat_threat if thr!='neutral' and nums(thr)==0 and not isinstance(thr, list)] #nums чтобы убрать время
+        cts = Counter(clean_threats)
+        s_threats = sorted(clean_threats, key=lambda x: -cts[x])
+        s_threats = list(OrderedDict.fromkeys(s_threats))
+        main_threat = Counter(clean_threats).most_common(1)[0][0]
+        try:
+            main_threats[('Vasiliy Bakotin',person)].append(s_threats[:2])  # две основные 
+        except KeyError:
+            main_threats[('Vasiliy Bakotin',person)] = s_threats[:2]
+
+
+# список угроз на ребра
+edge_lab = main_threats
+
+o = list(edge_lab.values())
+v = [', '.join(i) for i in o]
+k = edge_lab.keys()
+edge_lab = dict(zip(k,v))
+
+
+-----------------------------------
+# import networkx
+g = nx.DiGraph()
+for i in range(0,len(persons)-1):
+    g.add_edge(persons[0], persons[i+1]) 
+for i in range(0,len(a_persons)-1):
+    g.add_edge(a_persons[0], a_persons[i+1])
+    
+positions = nx.spring_layout(g)
+#for p in positions:
+    #positions[p][1] += 0.5
+nx.draw(g, positions)
+
+---------------------------------------
+# Размер ноды - величина проблемности   
+
+n_w = [1-(outs[contact].count('neutral') / counts[contact]) for contact in outs]
+a_n_w = [1-(outs_a[contact].count('neutral') / counts_a[contact]) for contact in outs_a]
+
+n_w = [1-(outs[contact].count('neutral') / counts[contact]) for contact in outs]
+n_w = [w*10000 for w in n_w]
+node_weights = [500 if w<1000 else w**1/2 for w in n_w]
+
+--------------------------------------
+
+ раскрашиваем в зеленый если угроз меньше 20%, красный если больше
+# подписываем ребра 2 наибольшими угрозами
+
+color_map = []
+for person in list(g.nodes):
+    try:
+        if 1-(outs[person].count('neutral') / counts[person]) > 0.2:        
+            color_map.append('red')
+        else:
+            if person != 'Люба Пасечник':
+                color_map.append('green')
+            else:
+                color_map.append('red')
+    except KeyError:
+        try:
+            if 1-(outs_a[person].count('neutral') / counts_a[person]) > 0.2:
+                color_map.append('red')
+            else:
+                color_map.append('green') 
+        except KeyError: 
+            color_map.append('yellow')
+            
+"""
+for p in positions:
+   positions[p][1] += 0.1
+"""
+nx.draw(g,positions,node_size = node_weights, node_color = color_map, with_labels = True)
+nx.draw_networkx_edge_labels(g,positions,edge_labels=edge_lab,font_color='red')
+plt.axis('off')
+plt.show()
