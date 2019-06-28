@@ -38,4 +38,15 @@ for l in chats:
                 chat_extract(soup)
             except Exception as e:
                 pass
-
+                
+# теперь к каждому сообщению применим функцию очистки текста
+dict_ = {}   
+for pers in msg:
+    for txt in msg[pers]:
+        cleared_txt = clear(txt.strip())
+        try:
+            dict_[pers].append(cleared_txt)
+        except KeyError:
+            dict_[pers] = [cleared_txt]
+            
+ 
