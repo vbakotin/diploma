@@ -1,0 +1,41 @@
+TAG_RE = re.compile(r'<[^>]+>')
+
+def clear(txt):
+    tokens=[morph.parse(w)[0].normal_form for w in txt.split()]
+    tbl=str.maketrans('', '',string.punctuation)
+    stripped=[w.translate(tbl) for w in tokens]
+    stop_words = stopwords.words('russian')                                                               
+    words=[word for word in stripped if word.isalpha() and word not in stop_words] 
+    return words
+#---------- вспомогательные для удаления html тегов и посдсчет цифр в тексте (чтобы убрать технические чаты, которые состоят из идентификаторов)
+def remove_tags(text):
+    return TAG_RE.sub('', text)
+
+def nums(s):
+    return sum(char.isdigit() for char in s)
+    
+# -------- Обработка одного чата  - делаем словарь вида {человек -> ['time + msg', ...]...}
+def chat_extract(soup):
+    arr = soup.find_all(class_='body')
+    chater = remove_tags(str(soup.find(class_ = 'text bold'))).strip()
+    for el in arr:
+            otkogo= remove_tags(str(el.find('div',class_='from_name'))).strip()
+            text = remove_tags(str(el.find(class_='text'))).strip()
+            time = el.find('div',class_='pull_right date details')
+            if time is not None:
+                time_ = str(time['title']).strip()
+            if otkogo == 'Vasiliy Bakotin' and text != 'None':
+                text = time_ + '|' + text
+                try:
+                    msg[chater].append(text)  
+                except KeyError:
+                    msg[chater] = [text]  
+#-----chats - список номеров чатов - обрабатываем
+так каждый              
+for l in chats:
+            try:
+                soup = BeautifulSoup(open("c:/users/vasil/Downloads/Telegram Desktop/DataExport_02_04_2019/chats/chat_" + str(l) + "/messages.html", encoding='utf-8'), "html.parser")
+                chat_extract(soup)
+            except Exception as e:
+                pass
+
